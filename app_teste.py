@@ -75,16 +75,15 @@ with st.sidebar:
     st.markdown("""
     ### BEM-VINDO  
     <span style="color: white;">Tire suas dúvidas sobre a nossa empresa aqui 😊</span>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
-    # Tema
     tema = st.selectbox("🎨 TEMA", ["Claro", "Escuro"], index=0 if st.session_state.tema == "Claro" else 1)
     st.session_state.tema = tema
 
     st.markdown("---")
 
 # ===============================
-# 🧠 Embeddings e Vetor In-Memory
+# 🧠 Embeddings e Index (sem persistência)
 # ===============================
 embedding_model = OpenAIEmbeddings(api_key=os.environ["OPENAI_API_KEY"])
 
@@ -92,7 +91,7 @@ embedding_model = OpenAIEmbeddings(api_key=os.environ["OPENAI_API_KEY"])
 def carregar_index():
     loader = PyPDFDirectoryLoader("arquivos/")
     documentos = loader.load()
-    return Chroma.from_documents(documentos, embedding_model, collection_name="tb-index")
+    return Chroma.from_documents(documentos, embedding_model)
 
 index = carregar_index()
 
@@ -134,7 +133,6 @@ def obter_resposta(pergunta):
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-# Exibe o título com estilo diferente se tema for claro
 if st.session_state.tema == "Claro":
     st.markdown('<div class="titulo-personalizado">🤖 TaskBoost - Seu Assistente Virtual</div>', unsafe_allow_html=True)
 else:
