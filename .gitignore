@@ -172,3 +172,25 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Ambiente virtual (caso crie um)
+venv/
+.env
+
+# Cache e arquivos temporários do Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Banco de vetores gerado pelo Chroma
+db_chroma/
+
+# Arquivos do Streamlit
+.streamlit/
+
+# Arquivos do sistema operacional
+.DS_Store
+Thumbs.db
+
+# PDFs carregados para o sistema
+arquivos/
