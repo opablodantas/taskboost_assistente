@@ -5,7 +5,6 @@ import os
 import streamlit as st
 from dotenv import load_dotenv
 import warnings
-import chromadb
 from langchain_community.document_loaders import PyPDFDirectoryLoader
 from langchain_community.embeddings import OpenAIEmbeddings
 from langchain_community.vectorstores import Chroma
@@ -84,7 +83,7 @@ with st.sidebar:
     st.markdown("---")
 
 # ===============================
-# 🧠 Embeddings e Index (sem persistência)
+# 🧠 Embeddings e Index (com persistência para Streamlit Cloud)
 # ===============================
 embedding_model = OpenAIEmbeddings(api_key=os.environ["OPENAI_API_KEY"])
 
@@ -92,8 +91,11 @@ embedding_model = OpenAIEmbeddings(api_key=os.environ["OPENAI_API_KEY"])
 def carregar_index():
     loader = PyPDFDirectoryLoader("arquivos/")
     documentos = loader.load()
-    chroma_client = chromadb.Client()
-    return Chroma.from_documents(documentos, embedding_model, client=chroma_client)
+    return Chroma.from_documents(
+        documentos,
+        embedding_model,
+        persist_directory="chroma_db"
+    )
 
 index = carregar_index()
 
