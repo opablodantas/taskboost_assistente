@@ -4,7 +4,8 @@ from dotenv import load_dotenv
 import warnings
 from langchain_community.document_loaders import PyPDFDirectoryLoader
 from langchain_openai import OpenAIEmbeddings, OpenAI
-from langchain_community.vectorstores import Chroma
+# from langchain_community.vectorstores import Chroma
+from langchain_community.vectorstores import FAISS
 from langchain.chains.question_answering import load_qa_chain
 from langchain.prompts import PromptTemplate
 
@@ -59,7 +60,6 @@ with st.sidebar:
     ### BEM-VINDO  
     Tire suas dúvidas sobre a nossa empresa aqui 😊
     """, unsafe_allow_html=True)
-
     tema = st.selectbox("🎨 TEMA", ["Claro", "Escuro"], index=0 if st.session_state.tema == "Claro" else 1)
     st.session_state.tema = tema
     st.markdown("---")
@@ -72,7 +72,8 @@ embedding_model = OpenAIEmbeddings(api_key=st.secrets["OPENAI_API_KEY"])
 def carregar_index():
     loader = PyPDFDirectoryLoader("arquivos/")
     documentos = loader.load()
-    return Chroma.from_documents(documentos, embedding_model)
+    return FAISS.from_documents(documentos, embedding_model)
+
 
 index = carregar_index()
 
