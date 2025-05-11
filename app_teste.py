@@ -3,9 +3,8 @@ import streamlit as st
 from dotenv import load_dotenv
 import warnings
 from langchain_community.document_loaders import PyPDFDirectoryLoader
-from langchain_community.embeddings import OpenAIEmbeddings
+from langchain_openai import OpenAIEmbeddings, OpenAI
 from langchain_community.vectorstores import Chroma
-from langchain_community.llms import OpenAI
 from langchain.chains.question_answering import load_qa_chain
 from langchain.prompts import PromptTemplate
 
@@ -100,7 +99,7 @@ prompt = PromptTemplate(
     template=template,
 )
 
-llm = OpenAI(openai_api_key=st.secrets["OPENAI_API_KEY"], temperature=0.7)
+llm = OpenAI(api_key=st.secrets["OPENAI_API_KEY"], temperature=0.7)
 chain = load_qa_chain(llm, chain_type="stuff", prompt=prompt)
 
 # Função para obter respostas do modelo
