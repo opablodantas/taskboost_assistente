@@ -1,7 +1,3 @@
-# ===============================
-# 📦 Importações e Configurações Iniciais
-# ===============================
-
 import os
 import streamlit as st
 from dotenv import load_dotenv
@@ -13,32 +9,24 @@ from langchain_community.llms import OpenAI
 from langchain.chains.question_answering import load_qa_chain
 from langchain.prompts import PromptTemplate
 
+# Ignorando avisos desnecessários
 warnings.filterwarnings("ignore")
 load_dotenv()
 
-# ===============================
-# 🧠 Inicializa o Tema na Sessão
-# ===============================
-
+# Verificando se o tema já foi definido na sessão
 if "tema" not in st.session_state:
     st.session_state.tema = "Claro"
 
-# ===============================
-# 🎨 Configuração da Página
-# ===============================
-
+# Configuração da página no Streamlit
 st.set_page_config(
     page_title="TaskBoost - Assistente IA",
     page_icon="🤖",
     layout="wide",
 )
 
-# ===============================
-# 🎨 Estilo Condicional por Tema
-# ===============================
-
+# Ajuste do estilo condicional com base no tema
 if st.session_state.tema == "Escuro":
-    st.markdown(""" <style>
+    st.markdown("""<style>
         .stApp { background-color: #000000; color: #FFFFFF; }
         .chat-bubble {
             padding: 10px 15px;
@@ -46,10 +34,10 @@ if st.session_state.tema == "Escuro":
             margin: 5px 0;
         }
         .user-bubble { background-color: #112137; color: #FFFFFF; }
-        .ai-bubble { background-color: #112137; color: #FFFFFF; } </style>
-    """, unsafe_allow_html=True)
+        .ai-bubble { background-color: #112137; color: #FFFFFF; }
+    </style>""", unsafe_allow_html=True)
 else:
-    st.markdown(""" <style>
+    st.markdown("""<style>
         .stApp { background-color: #FFFFFF; color: #000000; }
         .chat-bubble {
             padding: 10px 15px;
@@ -63,44 +51,36 @@ else:
             font-weight: bold;
             color: #000000;
             margin-bottom: 20px;
-        } </style>
-    """, unsafe_allow_html=True)
+        }
+    </style>""", unsafe_allow_html=True)
 
-# ===============================
-# 🧾 Sidebar
-# ===============================
-
+# Configuração da sidebar
 with st.sidebar:
     st.image("LOGO_TASKBOOST.png", width=150)
     st.markdown("## LIBERTE-SE DO TRABALHO REPETITIVO. FOQUE NO QUE IMPORTA")
     st.markdown("""
-    ### BEM-VINDO <span style="color: white;">Tire suas dúvidas sobre a nossa empresa aqui 😊</span>
+    ### BEM-VINDO
+    Tire suas dúvidas sobre a nossa empresa aqui 😊
     """, unsafe_allow_html=True)
 
-# Escolha do tema
+# Ajuste para a troca de tema no sidebar
 tema = st.selectbox("🎨 TEMA", ["Claro", "Escuro"], index=0 if st.session_state.tema == "Claro" else 1)
 st.session_state.tema = tema
-
 st.markdown("---")
 
-# ===============================
-# 🧠 Embeddings e Index (com persistência para Streamlit Cloud)
-# ===============================
+# Definindo o modelo de embeddings utilizando a chave da OpenAI armazenada nos secrets
+embedding_model = OpenAIEmbeddings(api_key=st.secrets["OPENAI_API_KEY"])
 
-embedding_model = OpenAIEmbeddings()  # Corrigido: não passar api_key diretamente
-
+# Função para carregar o índice de documentos (sem persistência)
 @st.cache_resource
 def carregar_index():
     loader = PyPDFDirectoryLoader("arquivos/")
     documentos = loader.load()
-    return Chroma.from_documents(documentos, embedding_model, persist_directory="chroma_db")
+    return Chroma.from_documents(documentos, embedding_model)
 
 index = carregar_index()
 
-# ===============================
-# 🔧 Modelo LLM e Prompt
-# ===============================
-
+# Modelo LLM e Prompt
 template = """
 Você é o assistente virtual da TaskBoost, uma empresa especializada em automatização de tarefas e criação de relatórios para pequenos negócios.
 
@@ -120,24 +100,19 @@ prompt = PromptTemplate(
     template=template,
 )
 
-llm = OpenAI(openai_api_key=os.environ["OPENAI_API_KEY"], temperature=0.7)
+llm = OpenAI(openai_api_key=st.secrets["OPENAI_API_KEY"], temperature=0.7)
 chain = load_qa_chain(llm, chain_type="stuff", prompt=prompt)
 
-# ===============================
-# 🔍 Função para Obter Respostas
-# ===============================
-
+# Função para obter respostas do modelo
 def obter_resposta(pergunta):
     docs_relacionados = index.similarity_search(pergunta, k=5)
     return chain.run(input_documents=docs_relacionados, question=pergunta)
 
-# ===============================
-# 💬 Histórico de Conversa
-# ===============================
-
+# Histórico de conversa no assistente
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
+# Exibindo título e pergunta do usuário
 if st.session_state.tema == "Claro":
     st.markdown('<div class="titulo-personalizado">🤖 TaskBoost - Seu Assistente Virtual</div>', unsafe_allow_html=True)
 else:
@@ -151,9 +126,9 @@ if pergunta:
         st.session_state.chat_history.append(("usuário", pergunta))
         st.session_state.chat_history.append(("assistente", resposta))
 
+    # Exibindo o histórico da conversa
     for autor, mensagem in st.session_state.chat_history:
         if autor == "usuário":
             st.markdown(f'<div class="chat-bubble user-bubble">🧑‍💼 {mensagem}</div>', unsafe_allow_html=True)
         else:
             st.markdown(f'<div class="chat-bubble ai-bubble">🤖 {mensagem}</div>', unsafe_allow_html=True)
-
