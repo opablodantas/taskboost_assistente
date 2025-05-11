@@ -100,7 +100,7 @@ prompt = PromptTemplate(
     template=template,
 )
 
-llm = OpenAI(api_key=st.secrets["OPENAI_API_KEY"], temperature=0.7)
+llm = OpenAIEmbeddings(api_key=st.secrets["OPENAI_API_KEY"], temperature=0.7)
 chain = load_qa_chain(llm, chain_type="stuff", prompt=prompt)
 
 # Função para obter respostas do modelo
