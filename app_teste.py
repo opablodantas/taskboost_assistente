@@ -7,7 +7,6 @@ from langchain_openai import OpenAIEmbeddings, OpenAI
 from langchain_community.vectorstores import FAISS
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
-from langchain.prompts import PromptTemplate
 
 warnings.filterwarnings("ignore")
 load_dotenv()
@@ -56,10 +55,8 @@ else:
 with st.sidebar:
     st.image("LOGO_TASKBOOST.png", width=150)
     st.markdown("## LIBERTE-SE DO TRABALHO REPETITIVO. FOQUE NO QUE IMPORTA")
-    st.markdown("""
-    ### BEM-VINDO  
-    Tire suas dúvidas sobre a nossa empresa aqui 😊
-    """, unsafe_allow_html=True)
+    st.markdown("""### BEM-VINDO  
+    Tire suas dúvidas sobre a nossa empresa aqui 😊""", unsafe_allow_html=True)
     tema = st.selectbox("🎨 TEMA", ["Claro", "Escuro"], index=0 if st.session_state.tema == "Claro" else 1)
     st.session_state.tema = tema
     st.markdown("---")
@@ -114,15 +111,21 @@ pergunta = st.chat_input("Digite aqui...")
 
 # Resposta usando ConversationalChain + FAISS
 def obter_resposta_com_contexto(pergunta):
-    documentos_relacionados = index.similarity_search(pergunta, k=5)
-    contexto = "\n".join([doc.page_content for doc in documentos_relacionados])
+    documentos_relacionados = index.similarity_search(pergunta, k=2)  # reduzido de 5 para 2
+    # Limitar o tamanho dos trechos
+    contexto = "\n".join([doc.page_content[:1000] for doc in documentos_relacionados])
     full_prompt = f"{template}\n\nDocumentos disponíveis:\n{contexto}\n\nUsuário: {pergunta}\nAssistente:"
     resposta = conversation_chain.run(input=full_prompt)
     return resposta
 
+# Processamento da pergunta
 if pergunta:
     with st.spinner("Pensando..."):
-        resposta = obter_resposta_com_contexto(pergunta)
+        try:
+            resposta = obter_resposta_com_contexto(pergunta)
+        except Exception as e:
+            resposta = "❌ Ocorreu um erro ao tentar gerar a resposta. Por favor, tente novamente."
+            st.error(str(e))
         st.session_state.chat_history.append(("usuário", pergunta))
         st.session_state.chat_history.append(("assistente", resposta))
 
