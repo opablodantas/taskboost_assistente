@@ -103,17 +103,8 @@ with st.sidebar:
     st.markdown("""### BEM-VINDO  
     Tire suas dúvidas sobre a nossa empresa aqui 😊""", unsafe_allow_html=True)
 
-    col1, col2 = st.columns([1, 4])
-    with col1:
-        st.image("icone_relatorio.png", width=30)
-    with col2:
-        st.markdown("**Geração de Relatórios**\nRelatórios automáticos em PDF.")
-
-    col1, col2 = st.columns([1, 4])
-    with col1:
-        st.image("icone_automacao.png", width=30)
-    with col2:
-        st.markdown("**Automação de Tarefas**\nSimplifique operações repetitivas.")
+    st.markdown("**🔍 Geração de Relatórios**\nRelatórios automáticos em PDF.")
+    st.markdown("**⚙️ Automação de Tarefas**\nSimplifique operações repetitivas.")
 
     tema = st.selectbox("🎨 TEMA", ["Claro", "Escuro"], index=0 if st.session_state.tema == "Claro" else 1)
     st.session_state.tema = tema
