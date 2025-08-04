@@ -1,8 +1,4 @@
 
-
-### 📘 **README.md**
-
-```markdown
 # 🤖 Assistente Virtual - TaskBoost
 
 Este projeto é um assistente virtual inteligente para a TaskBoost, criado com **Streamlit**, **LangChain** e **OpenAI**, com capacidade de responder perguntas com base em documentos internos da empresa (em PDF). O objetivo é oferecer uma interface amigável e funcional que ajude clientes ou visitantes a tirar dúvidas sobre a empresa e seus serviços.
