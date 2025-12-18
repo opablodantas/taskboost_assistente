@@ -1,14 +1,12 @@
-chromadb
-pypdf
-openai
-langchain
-langchain-community
-pandas
-numpy
+streamlit
 python-dotenv
-tiktoken
-
-# Pacote para instalar nao original
-
-langchain-openai
+pypdf
 faiss-cpu
+chromadb
+tiktoken
+numpy
+pandas
+
+openai==0.28.1
+langchain==0.0.353
+langchain-community==0.0.20
